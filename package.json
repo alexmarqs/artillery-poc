@@ -1,7 +1,7 @@
 {
   "name": "artillery-poc",
   "version": "1.0.0",
-  "description": "POC Artillery.io ",
+  "description": "POC Artillery.io",
   "scripts": {
     "test:local": "cross-env DD_API_KEY=123456 TEST_ENV=local npm run test",
     "test:local:debug": "cross-env DEBUG=http,http:response,metrics npm run test:local",

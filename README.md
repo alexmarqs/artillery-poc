@@ -5,8 +5,8 @@ Example of load/performance tests using Artillery.io for proof of concept (poc) 
 
 ## System requirements
 
-- Node
-- Docker
+- Node;
+- Docker (docker-compose);
 
 ## Test overview
 
@@ -64,7 +64,7 @@ In order to send Artillery metrics (such as latency and response codes) to Datad
 
 Set your Datadog API KEY in the environment variable ``DD_API_KEY``. If you want to publish metrics using this local example, replace the ``DD_API_KEY`` value already defined in the command script ``test:local`` (see [package.json](package.json)).
 
-**Note:** Use the US region for your Datadog account (see this [open issue](https://github.com/artilleryio/artillery/issues/876) with the EU).
+**Note:** Use a Datadog account in the US region (see this [open issue](https://github.com/artilleryio/artillery/issues/876)).
 
 ## Configure thresholds to CI/CD 
 If you want Artillery exiting with a non-zero code when a condition is not met (useful when running CI/CD pipelines), you must define some service-level objectives (SLO's) for your application. This can be achieved by configuring pass/failed criterias (thresholds): 
