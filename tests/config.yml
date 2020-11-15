@@ -1,0 +1,55 @@
+##########
+# CONFIG #
+##########
+#
+# By default Artillery will open a new connection for each new virtual user.
+#
+# For more information: https://artillery.io/docs/script-reference/ and https://artillery.io/docs/http-reference/
+#
+config:
+  target: "" # default target
+  plugins: # config artillery plugins
+    expect: {}
+    publish-metrics:
+      - type: datadog
+        apiKey: "{{ $processEnvironment.DD_API_KEY }}"
+        prefix: artillery.
+        tags:
+          - mode:performance-tests
+          - component:dummy-api
+        event:
+          tags:
+            - mode:performance-tests
+  ensure: 
+    p95: 500 # max aggregate p95 latency 
+    maxErrorRate: 5 #  max total error rate
+  http:
+    timeout: 5 # responses have to be sent within 5 seconds or the request will be aborted
+    #pool: 10 # All HTTP requests from all virtual users will be sent over the same X connections 
+  defaults:
+    headers:
+      content-type: "application/json"
+  environments: # use flag -e <env-name>
+    local:
+      target: "http://localhost:3333"
+      phases:
+        - duration: 30
+          arrivalCount: 15 # fixed count of arrivals, in this case we create 15 virtual users in 30 seconds
+          name:  "Warm up"  
+    other:
+      target: "https://OTHER-URL-ENV-HERE"
+      phases:
+        - duration: 10
+          arrivalRate: 0
+          rampTo: 1
+          name: "Warm up"
+        - duration: 60
+          arrivalCount: 30
+          name: "Sustained max load 1 every 2 seconds"
+  payload:
+    path: "../utils/test-users.csv" # it’s also possible to load a different CSV file depending on the environment you set, "{{ $environment }}-test-users.csv"
+    fields:
+      - "username-csv"
+      - "email-csv" 
+    skipHeader: true # ignore the first line of the csv
+  processor: "../utils/data-processor.js"

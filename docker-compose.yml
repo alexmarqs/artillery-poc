@@ -1,0 +1,8 @@
+version: "3.7"
+services:
+  dymmy-api:
+    image: clue/json-server
+    ports:
+      - "3333:80"
+    volumes:
+      - ./data/db.json:/data/db.json:ro

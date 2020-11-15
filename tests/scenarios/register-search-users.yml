@@ -1,0 +1,51 @@
+########################################
+# SCENARIOS: REGISTER AND SEARCH USERS #
+########################################
+#
+# Weights are optional, and if not specified are set to 1 (i.e. each scenario is equally likely to be picked).
+#
+# For more information: https://artillery.io/docs/script-reference/ and https://artillery.io/docs/http-reference/
+#
+scenarios:
+  - name: "Register random user"
+    weight: 70 # probability % to call this scenario
+    flow:
+      - post:
+          url: "/users"
+          beforeRequest: "setJsonBodyWithRandomUser"
+          capture:
+            json: "id"
+            as: "id"
+          expect:
+            - statusCode: 201
+            - contentType: json
+            - matchesRegexp: .+ 
+      - log: "Sent a post request to /users with {{ newUsername }}, {{ newEmail }}"
+      - think: 2 # pause for 2 seconds
+      - log: "Search for the new user (id = {{ id }})"
+      - get:
+          url: "/users/{{ id }}"
+          capture:
+            json: "username"
+            as: "username"
+          expect:
+            - statusCode: 200
+            - contentType: json
+            - equals:
+              - "{{ newUsername }}"
+              - "{{ username }}"
+  - name: "Search for user from csv file"
+    weight: 30 # probability % to call this scenario
+    flow:
+      - log: "Search for a user contained in the csv file (username = {{ username-csv }})"
+      - get:
+          url: "/users?username={{ username-csv }}"
+          capture:
+            json: "$[0].email"
+            as: "email"
+          expect:
+            - statusCode: 200
+            - contentType: json
+            - equals:
+              - "{{ email }}"
+              - "{{ email-csv }}"
